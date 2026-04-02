@@ -4,11 +4,33 @@ The three-phase cycle that drives all research. Each phase has a strict protocol
 
 ## Phase: INIT (No RSD.md exists)
 
-1. Ask human for:
-   - Research goal (what are we trying to achieve?)
-   - Scope and constraints (budget, time, off-limits approaches)
-   - Initial hypotheses (if any)
-   - Knowledge sources (papers, URLs, notes to drop in context/)
+Supports two input modes — detect automatically based on what the human provides:
+
+### Mode A: Topic description (AI searches + bootstraps)
+
+If human provides a **topic sentence or paragraph** (e.g., "I want to study whether COMPASS alignment improves instruction-following in 7B models"):
+
+1. Parse the topic description into: domain, key concepts, research direction
+2. **Search for related work** — use WebSearch to find relevant papers on arxiv, Google Scholar, Semantic Scholar:
+   - Search 3-5 queries derived from the topic
+   - Download or save URLs for the top 5-10 relevant papers
+   - Write URLs/summaries to `context/SOURCES.md`
+3. Read the found papers/abstracts — extract key findings relevant to the topic
+4. **Propose** to the human:
+   - A refined research goal based on what the literature says
+   - Initial hypotheses grounded in the literature
+   - Suggested scope and constraints
+   - Key knowledge gaps the research could fill
+5. Ask human to confirm/revise the proposed goal + hypotheses
+6. Create `RSD.md` from the confirmed inputs
+7. Create directories, compile PDF, git commit
+8. STOP.
+
+### Mode B: Structured input (human provides fields directly)
+
+If human provides **structured fields** (goal, hypotheses, scope, constraints):
+
+1. Use the provided fields directly
 2. Read all files in `context/` if any exist — write key takeaways
 3. Create `RSD.md` using template from `references/rsd-schema.md`
 4. Create directories if missing: `checkpoints/`, `logs/`, `outputs/`, `context/papers/`, `context/notes/`, `context/prior_work/`
@@ -16,6 +38,12 @@ The three-phase cycle that drives all research. Each phase has a strict protocol
 6. Run `bash scripts/compile_rsd.sh`
 7. Git commit all files: `"research: initialize RSD"`
 8. STOP. Tell human: "RSD initialized. Read RSD.pdf. Run /research to begin planning cycle 1."
+
+### Detection logic
+
+- If input contains structured fields (`Goal:`, `Hypotheses:`, `Scope:`) → Mode B
+- If input is free-form text without structured fields → Mode A
+- If input has some fields but is missing key ones → Mode A for missing parts, Mode B for provided parts
 
 ## Phase: PLAN
 
@@ -26,13 +54,32 @@ Before proposing any experiment, MUST:
 2. Read any unread sources in `context/`
 3. Update Knowledge Sources table in RSD.md with key takeaways
 
-### Write the Plan
+### Write the Plan (two modes)
 
 1. Read RSD.md fully. Review all prior cycles, hypotheses, open questions.
-2. Write under the current cycle's `### PLAN` section:
+
+**Mode A: Human proposes, AI refines** (human is the PI)
+
+If the human already wrote an experiment idea in the RSD or in chat:
+- Read the human's proposal
+- AI ADDS: predictions, metrics, verify/guard commands, cost estimates, knowledge source citations
+- AI REFINES: fill in any gaps, suggest improvements, flag risks
+- DO NOT replace the human's core idea — enhance it
+
+**Mode B: AI proposes** (human delegates ideation)
+
+If no human proposal exists and human says "propose" or leaves PLAN blank:
+- AI generates the experiment proposal based on:
+  - Current hypotheses and prior results
+  - Knowledge sources in context/
+  - What worked/failed in previous cycles
+  - Open questions flagged by human
+
+**In both modes, write under the current cycle's `### PLAN` section:**
 
 ```markdown
 ### PLAN
+**Proposed by:** [human | AI | human-refined-by-AI]
 **Proposed:** [what experiment to run and why — link to hypothesis]
 **Grounded in:** [which knowledge source informed this — cite file or URL]
 **Prediction:** [specific expected outcome — numbers, directions, ranges]

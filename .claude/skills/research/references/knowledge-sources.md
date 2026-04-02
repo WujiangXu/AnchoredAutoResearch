@@ -63,11 +63,52 @@ If no relevant prior work exists for a proposed experiment:
 **Grounded in:** No prior work found — [explain why this is novel]
 ```
 
+## Web Search for Related Work
+
+When initializing a new project (INIT Mode A) or when explicitly asked:
+
+### Search Protocol
+
+1. Extract key concepts from the research topic/goal
+2. Construct 3-5 search queries:
+   - `"{main concept}" site:arxiv.org`
+   - `"{concept1}" AND "{concept2}" recent papers`
+   - `"{concept}" benchmark results state-of-the-art`
+3. Use WebSearch to find relevant papers and resources
+4. For each relevant result:
+   - Add URL to `context/SOURCES.md` with type `url`
+   - Use WebFetch to read abstract/summary if available
+   - Write key takeaway (1 sentence)
+5. Report found sources to human for review
+
+### What to Search For
+
+- **Directly related work** — papers that study the same phenomenon
+- **Methods** — techniques the research could use or compare against
+- **Benchmarks** — standard datasets and baselines for the domain
+- **Recent advances** — state-of-the-art results to compare against
+- **Negative results** — what has been tried and didn't work (saves time)
+
+### When to Search
+
+- `/research:context search <topic>` — explicit topic search
+- INIT Mode A — automatic when human provides topic sentences
+- PLAN pre-flight — if human mentions a concept not in SOURCES.md
+
 ## `/research:context` Command Protocol
 
 When invoked standalone:
+
+### Basic mode (no arguments): Read local files
 1. Scan `context/` for all files
 2. Read any unread sources
 3. Update `context/SOURCES.md` with key takeaways
 4. If RSD.md exists, update its Knowledge Sources table
 5. Report to human: what was read, key findings, any questions
+
+### Search mode (`/research:context search <topic>`): Web search
+1. Search arxiv, Google Scholar, web for the given topic
+2. Download or save URLs for top 5-10 relevant results
+3. Read abstracts/summaries
+4. Update `context/SOURCES.md` with found sources
+5. Report: what was found, key findings, suggested hypotheses
