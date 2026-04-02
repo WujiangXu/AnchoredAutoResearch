@@ -1,0 +1,23 @@
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Generated files (regenerated from RSD.md by compile_rsd.sh)
+# NOTE: We DO track RSD.tex and RSD.pdf so they're available for review.
+# Only auxiliary build files are ignored.
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+
+# Large experiment logs (uncomment if logs get too big for git)
+# logs/*.json
+# logs/*.log

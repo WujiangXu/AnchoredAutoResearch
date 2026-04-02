@@ -1,0 +1,98 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- Page layout ---
+\usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+
+% --- Colors and boxes ---
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{etoolbox}
+
+% --- Tables ---
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+
+% --- Fonts and formatting ---
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% --- Status badge colors ---
+\definecolor{statusgreen}{HTML}{28A745}
+\definecolor{statusyellow}{HTML}{F0AD4E}
+\definecolor{statusred}{HTML}{DC3545}
+\definecolor{statusblue}{HTML}{007BFF}
+\definecolor{statusgray}{HTML}{6C757D}
+\definecolor{lightgray}{HTML}{F8F9FA}
+\definecolor{quoteborder}{HTML}{3B82F6}
+
+% --- Status badge command ---
+\newcommand{\statusbadge}[1]{%
+  \ifstrequal{#1}{APPROVED}{\colorbox{statusgreen}{\textbf{\textcolor{white}{\small\ APPROVED\ }}}}{}%
+  \ifstrequal{#1}{WAITING\_HUMAN}{\colorbox{statusyellow}{\textbf{\textcolor{white}{\small\ WAITING HUMAN\ }}}}{}%
+  \ifstrequal{#1}{WAITING_HUMAN}{\colorbox{statusyellow}{\textbf{\textcolor{white}{\small\ WAITING HUMAN\ }}}}{}%
+  \ifstrequal{#1}{BLOCKED}{\colorbox{statusred}{\textbf{\textcolor{white}{\small\ BLOCKED\ }}}}{}%
+  \ifstrequal{#1}{EXECUTING}{\colorbox{statusblue}{\textbf{\textcolor{white}{\small\ EXECUTING\ }}}}{}%
+  \ifstrequal{#1}{PLAN}{\colorbox{statusblue}{\textbf{\textcolor{white}{\small\ PLAN\ }}}}{}%
+  \ifstrequal{#1}{EXECUTE}{\colorbox{statusblue}{\textbf{\textcolor{white}{\small\ EXECUTE\ }}}}{}%
+  \ifstrequal{#1}{INTERPRET}{\colorbox{statusblue}{\textbf{\textcolor{white}{\small\ INTERPRET\ }}}}{}%
+  \ifstrequal{#1}{INIT}{\colorbox{statusgray}{\textbf{\textcolor{white}{\small\ INIT\ }}}}{}%
+}
+
+% --- Human decision box ---
+\newtcolorbox{humandecision}{
+  colback=blue!5,
+  colframe=quoteborder,
+  left=8pt,
+  right=8pt,
+  top=6pt,
+  bottom=6pt,
+  boxrule=2pt,
+  arc=0pt,
+  leftrule=4pt,
+  rightrule=0pt,
+  toprule=0pt,
+  bottomrule=0pt
+}
+
+% --- Prediction delta box ---
+\newtcolorbox{predictionbox}[1][]{
+  colback=lightgray,
+  colframe=statusgray,
+  title={#1},
+  fonttitle=\bfseries,
+  boxrule=0.5pt,
+  arc=2pt,
+  left=8pt,
+  right=8pt,
+  top=4pt,
+  bottom=4pt
+}
+
+% --- Code/path styling ---
+\newcommand{\filepath}[1]{\texttt{\small #1}}
+\newcommand{\commithash}[1]{\texttt{\small\color{statusgray}#1}}
+
+% --- Header/footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Research State Document}
+\fancyhead[R]{\small\today}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- Document metadata (set by compile script) ---
+\title{Research State Document}
+\author{AnchoredAutoResearch}
+\date{\today}
+
+\begin{document}
+
+% Body is inserted here by the compile script
+\INPUT_BODY
+
+\end{document}
