@@ -63,6 +63,6 @@ Present complete plan, ask for confirmation, then:
 2. Set Status: WAITING_HUMAN
 3. Compile PDF
 4. Git commit: "research: cycle N plan"
-5. STOP — human reviews and approves in RSD.md
+5. STOP — human reviews and can approve or revise in chat or RSD.md using any clear wording
 
 Stream all output live. Never run in background.

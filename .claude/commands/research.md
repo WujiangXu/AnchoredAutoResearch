@@ -15,7 +15,7 @@ EXECUTE IMMEDIATELY — do not deliberate before reading the protocol.
 7. If `context/SOURCES.md` exists, read it for knowledge source status
 8. Execute the appropriate phase based on RSD status:
    - No RSD.md → INIT (per phase-protocol.md)
-   - Status: WAITING_HUMAN → check for approval marker
+   - Status: WAITING_HUMAN → check for explicit human approval or revision in the latest chat message or in RSD.md
    - Phase: PLAN → execute PLAN protocol
    - Phase: EXECUTE → load `references/autonomous-loop.md` or manual execute
    - Phase: INTERPRET → execute INTERPRET protocol

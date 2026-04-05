@@ -88,7 +88,7 @@ State what the system cannot do. If blocked:
 6. NEVER skip the prediction step
 7. NEVER omit architecture changes from Code Architecture section
 8. NEVER proceed past WAITING_HUMAN status
-9. NEVER self-approve — only human markers count
+9. NEVER self-approve — only explicit human approval or revision counts, whether given in chat or written in RSD.md
 10. NEVER run unbounded execution loops — always bounded with human review after
 
 ## Rollback Protocol

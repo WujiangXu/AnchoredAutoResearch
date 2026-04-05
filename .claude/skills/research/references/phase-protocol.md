@@ -11,7 +11,7 @@ Supports two input modes — detect automatically based on what the human provid
 If human provides a **topic sentence or paragraph** (e.g., "I want to study whether COMPASS alignment improves instruction-following in 7B models"):
 
 1. Parse the topic description into: domain, key concepts, research direction
-2. **Search for related work** — use WebSearch to find relevant papers on arxiv, Google Scholar, Semantic Scholar:
+2. **Search for related work** — search the web for relevant papers on arxiv, Google Scholar, Semantic Scholar:
    - Search 3-5 queries derived from the topic
    - Download or save URLs for the top 5-10 relevant papers
    - Write URLs/summaries to `context/SOURCES.md`
@@ -97,20 +97,26 @@ If no human proposal exists and human says "propose" or leaves PLAN blank:
 6. Copy `RSD.md` to `checkpoints/cycle_N_plan.md` and `RSD.pdf` to `checkpoints/cycle_N_plan.pdf`
 7. STOP. Present to human:
    - Show the plan section
-   - Say: **"Read RSD.pdf for the formatted view. To approve, edit RSD.md and add under PLAN:"**
+   - Say: **"Read RSD.pdf for the formatted view. Reply with approval or revision in chat, or add a clear note under PLAN in RSD.md. Exact template is optional."**
+   - Give short examples such as:
    ```
-   > **Human decision:** APPROVED
-   > **Date:** YYYY-MM-DD
+   approved, proceed
+   ```
+   or:
+   ```
+   revised: focus more on X while keeping Y fixed
    ```
    **"Then run /research to continue."**
 
 ## Phase: EXECUTE
 
-**Pre-condition:** Current cycle's PLAN must contain approval marker.
+**Pre-condition:** Current cycle's PLAN must have explicit human approval or revision, either in `RSD.md` or in the latest human chat message.
 
 If no approval: tell human, STOP.
 
 If approved (including REVISED — incorporate the revision):
+1. If the approval/revision came from chat, append a concise summary of that human feedback to the current PLAN section and `## Human Decisions Log` before proceeding.
+2. Use the approved or revised intent as the execution boundary.
 
 ### Check Execution Mode
 
@@ -144,7 +150,7 @@ Delegate to `references/autonomous-loop.md`:
 ### Post-Execute: Codex Review
 
 After all experiments (manual or fast-loop):
-1. Use `codex:rescue` to review the git diff since EXECUTE started
+1. Use the code review tool to review the git diff since EXECUTE started
 2. Write Codex review summary to RSD under EXECUTE section:
    ```
    **Codex review:** [summary of code quality findings]
@@ -180,11 +186,11 @@ After all experiments (manual or fast-loop):
 5. Run `bash scripts/compile_rsd.sh`
 6. Git commit: `"research: cycle N interpret"`
 7. Copy to `checkpoints/cycle_N_interpret.{md,pdf}`
-8. STOP. Present prediction delta and hypothesis updates to human.
+8. STOP. Present prediction delta and hypothesis updates to human, and ask for a normal-language approval or revision in chat or RSD. Exact template is optional.
 
 ## Advancing to Next Cycle
 
-When INTERPRET has approval marker:
+When INTERPRET has explicit human approval or revision in chat or RSD:
 1. Increment `## Cycle:` by 1
 2. Add new cycle section: `## Cycle {N+1}`
 3. Enter PLAN phase for new cycle

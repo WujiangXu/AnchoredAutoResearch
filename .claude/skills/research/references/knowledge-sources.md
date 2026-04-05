@@ -37,7 +37,7 @@ Compare against the Source column in `context/SOURCES.md`. Any file not listed i
 
 - **PDF files**: Read with the Read tool (supports PDF)
 - **Markdown/text files**: Read directly
-- **URLs in SOURCES.md**: Use WebFetch to retrieve content
+- **URLs in SOURCES.md**: Fetch the page to retrieve content
 - **JSON/CSV data files**: Read and extract key metrics
 
 ### Step 3: Update SOURCES.md
@@ -150,10 +150,10 @@ When initializing a new project (INIT Mode A) or when explicitly asked:
    - `"{main concept}" site:arxiv.org`
    - `"{concept1}" AND "{concept2}" recent papers`
    - `"{concept}" benchmark results state-of-the-art`
-3. Use WebSearch to find relevant papers and resources
+3. Search the web to find relevant papers and resources
 4. For each relevant result:
    - Add URL to `context/SOURCES.md` with type `url`
-   - Use WebFetch to read abstract/summary if available
+   - Fetch the page to read abstract/summary if available
    - Write key takeaway (1 sentence)
 5. Report found sources to human for review
 

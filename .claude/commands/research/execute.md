@@ -14,8 +14,8 @@ Extract from $ARGUMENTS:
 
 ## Execution
 
-1. Read `RSD.md` — verify we are in EXECUTE phase with an approved plan
-2. Read the approved PLAN section — extract execution mode, verify command, guard command
+1. Read `RSD.md` — verify we are in EXECUTE phase with explicit human approval or revision
+2. Read the approved PLAN section and the latest human feedback — extract execution mode, verify command, guard command, and any revisions
 3. If execution mode is `fast-loop`:
    - Read the autonomous loop protocol: `.claude/skills/research/references/autonomous-loop.md`
    - Read the results logging protocol: `.claude/skills/research/references/results-logging.md`

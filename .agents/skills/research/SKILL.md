@@ -14,9 +14,9 @@ Inspired by [autoresearch](https://github.com/uditgoenka/autoresearch). Applies 
 
 **CRITICAL — READ THIS FIRST:**
 
-For ALL commands (`/research`, `/research:plan`, `/research:execute`, `/research:context`):
+For ALL commands (`$research`, `$research-plan`, `$research-execute`, `$research-context`):
 
-1. Read `CLAUDE.md` for project rules
+1. Read `AGENTS.md` for project rules
 2. Read `RSD.md` to determine current state (create if missing → INIT phase)
 3. Read `context/SOURCES.md` if it exists — check for unread knowledge sources
 4. Follow the appropriate protocol from the references/ directory
@@ -25,17 +25,21 @@ For ALL commands (`/research`, `/research:plan`, `/research:execute`, `/research
 
 | Subcommand | Purpose | Reference |
 |------------|---------|-----------|
-| `/research` | Main state machine — dispatches to current phase | `references/phase-protocol.md` |
-| `/research:plan` | Interactive experiment design wizard (Goal→Scope→Metric→Verify→Guard) | `references/phase-protocol.md` (PLAN section) |
-| `/research:execute` | Fast execution loop (modify→commit→verify→guard→decide→log) or manual execution | `references/autonomous-loop.md` |
-| `/research:context` | Manage knowledge sources — add, read, index papers/notes/prior work | `references/knowledge-sources.md` |
+| `$research` | Main state machine — dispatches to current phase | `references/phase-protocol.md` |
+| `$research-plan` | Interactive experiment design wizard (Goal→Scope→Metric→Verify→Guard) | `references/phase-protocol.md` (PLAN section) |
+| `$research-execute` | Fast execution loop (modify→commit→verify→guard→decide→log) or manual execution | `references/autonomous-loop.md` |
+| `$research-context` | Manage knowledge sources — add, read, index papers/notes/prior work | `references/knowledge-sources.md` |
+
+Codex alias note:
+- If the repo installed the alias skills, `$research:plan`, `$research:execute`, and `$research:context` are accepted aliases for the three subcommands above.
+- `/research:*` remains Claude-specific slash-command syntax.
 
 ## State Machine
 
-The main `/research` command reads RSD.md and dispatches based on status:
+The main `$research` command reads RSD.md and dispatches based on status:
 
 ```
-/research invoked
+$research invoked
   │
   ├─ No RSD.md → INIT (ask goal, read context/, create RSD)
   │
@@ -76,12 +80,12 @@ Load: `references/rsd-schema.md` for the full RSD template and section definitio
 - Human can approve or revise in chat or by editing `RSD.md`
 - AI NEVER writes LaTeX directly — only markdown
 
-## Codex Review Integration
+## Code Review Integration
 
 After EXECUTE phase completes, use the code review tool to review changed files:
-- Send the git diff to Codex for code review
+- Send the git diff for code review
 - Write the review summary to RSD under EXECUTE section
-- Human reads the Codex summary instead of reviewing code directly
+- Human reads the review summary instead of reviewing code directly
 
 ## Knowledge Sources
 

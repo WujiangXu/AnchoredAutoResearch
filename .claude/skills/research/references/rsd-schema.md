@@ -88,7 +88,13 @@ AI-flagged items needing human input. Cleared when resolved.
 
 ## Human Approval Format
 
-Human writes this in RSD.md under the relevant phase:
+Human approval or revision can be given in either place:
+- a clear human-written note in `RSD.md` under the relevant phase
+- a clear human chat message in the current session
+
+Exact wording is not required. The important part is that the intent is explicit and unambiguous.
+
+Examples in `RSD.md`:
 ```markdown
 > **Human decision:** APPROVED
 > **Date:** YYYY-MM-DD
@@ -98,3 +104,11 @@ or:
 > **Human decision:** REVISED — [specific changes]
 > **Date:** YYYY-MM-DD
 ```
+
+Examples in chat:
+- "approved, go ahead"
+- "looks good, proceed"
+- "revised: focus more on X and keep Y fixed"
+- "#Revised. Prioritize coding first, then tool use."
+
+When approval or revision is given in chat, the agent should summarize it into `RSD.md` and `## Human Decisions Log` before continuing.

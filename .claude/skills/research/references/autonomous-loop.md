@@ -17,6 +17,15 @@ During EXECUTE phase, when the approved PLAN specifies:
 
 If execution mode is `manual`, this protocol does NOT activate — use the manual execution steps in `phase-protocol.md` instead.
 
+## Permissions (User-Controlled)
+
+The fast-loop runs shell commands (verify, guard, git) repeatedly. Launch the session with the permissions you want before entering EXECUTE:
+
+- **Claude Code:** start Claude in the permission mode you want, or approve commands manually during the loop.
+- **Codex CLI:** launch with `codex --full-auto` or equivalent session permissions for low-friction execution.
+
+Research decision checkpoints (WAITING_HUMAN) are protocol-level — they always require human approval in RSD.md regardless of shell permission settings.
+
 ## Phase 0: Precondition Checks
 
 **MUST complete ALL checks before entering the loop.**
@@ -215,7 +224,7 @@ After the loop completes (or after manual execution):
    ```bash
    git diff {pre_execute_commit}..HEAD
    ```
-2. Use `codex:rescue` to review the changed code
+2. Use the code review tool to review the changed code
 3. Write Codex review summary to RSD under EXECUTE section:
    ```markdown
    **Codex review:**
