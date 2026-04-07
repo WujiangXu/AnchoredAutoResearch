@@ -45,7 +45,7 @@ install_claude_skills() {
         rm "$target_claude/commands/research"
     fi
     ln -sf "$SCRIPT_DIR/.claude/commands/research" "$target_claude/commands/research"
-    echo "  ✓ Claude subcommands linked: /research:plan, /research:execute, /research:context"
+    echo "  ✓ Claude subcommands linked: /research:adopt, /research:plan, /research:execute, /research:context"
 }
 
 copy_codex_skill() {
@@ -68,9 +68,11 @@ install_codex_skills() {
     mkdir -p "$target_codex/skills/research"
 
     copy_codex_skill "$target_codex" "research" "research" "research"
+    copy_codex_skill "$target_codex" "research-adopt" "research-adopt" "research-adopt"
     copy_codex_skill "$target_codex" "research-plan" "research-plan" "research-plan"
     copy_codex_skill "$target_codex" "research-execute" "research-execute" "research-execute"
     copy_codex_skill "$target_codex" "research-context" "research-context" "research-context"
+    copy_codex_skill "$target_codex" "research-colon-adopt" "research-colon-adopt" "research:adopt"
     copy_codex_skill "$target_codex" "research-colon-plan" "research-colon-plan" "research:plan"
     copy_codex_skill "$target_codex" "research-colon-execute" "research-colon-execute" "research:execute"
     copy_codex_skill "$target_codex" "research-colon-context" "research-colon-context" "research:context"
@@ -156,8 +158,8 @@ if [ "$1" = "--global" ]; then
     echo ""
     echo "Done! Available in ALL projects:"
     echo "  Claude Code: /research"
-    echo "  Codex CLI:   \$research, \$research-plan, \$research-execute, \$research-context"
-    echo "               aliases: \$research:plan, \$research:execute, \$research:context"
+    echo "  Codex CLI:   \$research, \$research-adopt, \$research-plan, \$research-execute, \$research-context"
+    echo "               aliases: \$research:adopt, \$research:plan, \$research:execute, \$research:context"
     echo ""
     echo "To set up a project: create context/ and scripts/ dirs, or run:"
     echo "  $0 /path/to/project"
@@ -186,8 +188,8 @@ else
     echo ""
     echo "Done! From $TARGET, run:"
     echo "  Claude Code: /research"
-    echo "  Codex CLI:   \$research, \$research-plan, \$research-execute, \$research-context"
-    echo "               aliases: \$research:plan, \$research:execute, \$research:context"
+    echo "  Codex CLI:   \$research, \$research-adopt, \$research-plan, \$research-execute, \$research-context"
+    echo "               aliases: \$research:adopt, \$research:plan, \$research:execute, \$research:context"
     echo ""
     echo "Quick start:"
     echo "  1. Drop papers into context/papers/"

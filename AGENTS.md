@@ -9,12 +9,13 @@ NEVER run experiments outside the protocol.
 | Command | Purpose |
 |---------|---------|
 | `$research` | Main state machine — reads RSD, dispatches to current phase |
+| `$research-adopt` | Anchor the protocol to an in-progress project (existing LaTeX + git + logs) — imports as read-only Cycle 1 |
 | `$research-plan` | Interactive experiment design wizard (Goal→Scope→Metric→Verify→Prediction) |
 | `$research-execute` | Run experiments: fast-loop (bounded) or manual, with code review |
 | `$research-context` | Read, index, and cite knowledge sources from context/ directory |
 
 Codex alias note:
-- If the repo-local sub-skills are installed, `$research:plan`, `$research:execute`, and `$research:context` are accepted aliases.
+- If the repo-local sub-skills are installed, `$research:adopt`, `$research:plan`, `$research:execute`, and `$research:context` are accepted aliases.
 - `/research:*` remains Claude-only slash-command syntax.
 - `$research` does not change Codex's permission state. Start Codex with the permissions you want for the session before invoking it.
 - Human checkpoints accept clear normal-language approval or revision in chat or RSD. Exact template wording is optional.

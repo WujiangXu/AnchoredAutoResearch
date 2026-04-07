@@ -9,6 +9,7 @@ NEVER run experiments outside the protocol.
 | Command | Purpose |
 |---------|---------|
 | `/research` | Main state machine — reads RSD, dispatches to current phase |
+| `/research:adopt` | Anchor the protocol to an in-progress project (existing LaTeX + git + logs) — imports as read-only Cycle 1 |
 | `/research:plan` | Interactive experiment design wizard (Goal→Scope→Metric→Verify→Prediction) |
 | `/research:execute` | Run experiments: fast-loop (bounded) or manual, with Codex review |
 | `/research:context` | Read, index, and cite knowledge sources from context/ directory |

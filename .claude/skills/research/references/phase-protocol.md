@@ -45,6 +45,58 @@ If human provides **structured fields** (goal, hypotheses, scope, constraints):
 - If input is free-form text without structured fields → Mode A
 - If input has some fields but is missing key ones → Mode A for missing parts, Mode B for provided parts
 
+### When to offer ADOPT instead of INIT
+
+If no `RSD.md` exists AND the user's free-form input contains any of these
+existing-project signals:
+
+- File extension mentions: `.tex`, `.bib`
+- Keywords: `draft`, `existing`, `already have`, `in progress`, `half finished`, `half-written`, `paper draft`
+- Path-like strings: anything starting with `/`, `~/`, `./`, or containing `logs/`, `context/`, `papers/`
+- References to prior work they themselves ran: `my experiments`, `my results`, `my logs`, `my code`
+
+…the agent MUST offer ADOPT before falling through to INIT:
+
+> "It looks like you already have an in-progress project. Do you want to
+> **ADOPT** it into the protocol (imports existing state as a read-only Cycle 1)
+> instead of starting fresh with INIT? (strict / fully-auto / no)"
+
+- If the user picks `strict` or `fully-auto`: dispatch to
+  `adopt-protocol.md` (see `## Phase: ADOPT` below).
+- If the user picks `no`: fall through to INIT as normal.
+
+The ADOPT offer is a **soft heuristic**. Never run ADOPT without an
+explicit user acceptance. See `adopt-protocol.md` for the full protocol.
+
+## Phase: ADOPT (No RSD.md, existing project being anchored)
+
+Use ADOPT instead of INIT when the user has an already-in-progress research
+project (existing LaTeX draft + git history + logs) and wants to anchor the
+protocol to it. ADOPT collapses the entire imported state into a single
+**Cycle 1**. The first "real" cycle (with fresh predictions) is Cycle 2.
+
+**Entry points:**
+1. Explicit command: `/research:adopt [--mode strict|fully-auto] [--from /path]`
+   (Codex: `$research-adopt` or `$research:adopt`)
+2. Implicit from `/research` when the free-form detection offers ADOPT
+   (see "When to offer ADOPT" above) and the user accepts.
+
+**Protocol:**
+- Full ADOPT protocol lives in `adopt-protocol.md`. Read that file before
+  doing anything.
+- Full Imported Cycle Format lives in `rsd-schema.md` under the
+  "Imported Cycle Format (ADOPT only)" section.
+- The ONE exemption to the prediction-before-execution rule is documented
+  in `core-principles.md` under principle #2 — imported cycles are
+  exempted ONLY when explicitly marked `imported: true` with all prediction
+  fields set to `N/A (imported)`.
+
+**Post-ADOPT state:**
+- `## Status: WAITING_HUMAN`, `## Phase: ADOPT`, `## Cycle: 1`
+- Cycle 1 is read-only — its metadata cannot be edited by subsequent phases
+- After the human approves in chat or `RSD.md`, the next `/research`
+  invocation increments to Cycle 2 and enters PLAN phase normally
+
 ## Phase: PLAN
 
 ### Pre-flight: Read Knowledge Sources

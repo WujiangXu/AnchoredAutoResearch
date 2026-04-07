@@ -25,6 +25,24 @@ The primary anti-reward-hacking mechanism. Before ANY experiment:
 
 The git history MUST show prediction commits before execution commits. If the AI's predictions are suspiciously perfect (delta always < 1%), the human can detect gaming by reviewing the prediction delta pattern.
 
+### The ONE exemption: imported (ADOPT) cycles
+
+Cycles created by `/research:adopt` (or `$research-adopt`) are the **only**
+exemption to this rule. An imported cycle represents work that was completed
+**before** the protocol was applied — there was no pre-execution moment at
+which a prediction could have existed, so no prediction commit is required.
+
+Imported cycles are **never silently exempted** — they are explicitly marked:
+
+- `imported: true` in the cycle metadata block
+- All prediction-adjacent fields are the literal string `N/A (imported)`
+- The `imported: true` flag is immutable; editing it is a protocol violation
+- Cycle 2 onward is NOT exempted — the first real prediction commit must
+  occur in Cycle 2 PLAN, before any Cycle 2 EXECUTE commit
+
+See `adopt-protocol.md` for the full ADOPT protocol and `rsd-schema.md` for
+the Imported Cycle Format.
+
 ## 3. Metrics Must Be Mechanical (from autoresearch)
 
 If you can't verify with a command, you can't iterate autonomously.
@@ -84,8 +102,8 @@ State what the system cannot do. If blocked:
 2. NEVER modify predictions after seeing results
 3. NEVER claim "done" without artifact pointer
 4. NEVER select or change metrics after seeing results
-5. NEVER modify past RSD entries (append-only within cycles)
-6. NEVER skip the prediction step
+5. NEVER modify past RSD entries (append-only within cycles) — including the metadata of an imported (ADOPT) cycle
+6. NEVER skip the prediction step — exempted ONLY for imported (ADOPT) cycles, which must be explicitly marked `imported: true` and use `N/A (imported)` for all prediction fields
 7. NEVER omit architecture changes from Code Architecture section
 8. NEVER proceed past WAITING_HUMAN status
 9. NEVER self-approve — only explicit human approval or revision counts, whether given in chat or written in RSD.md

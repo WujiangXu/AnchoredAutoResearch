@@ -26,6 +26,7 @@ For ALL commands (`/research`, `/research:plan`, `/research:execute`, `/research
 | Subcommand | Purpose | Reference |
 |------------|---------|-----------|
 | `/research` | Main state machine — dispatches to current phase | `references/phase-protocol.md` |
+| `/research:adopt` | Anchor the protocol to an in-progress project (existing LaTeX + git + logs) — imports as read-only Cycle 1 | `references/adopt-protocol.md` |
 | `/research:plan` | Interactive experiment design wizard (Goal→Scope→Metric→Verify→Guard) | `references/phase-protocol.md` (PLAN section) |
 | `/research:execute` | Fast execution loop (modify→commit→verify→guard→decide→log) or manual execution | `references/autonomous-loop.md` |
 | `/research:context` | Manage knowledge sources — add, read, index papers/notes/prior work | `references/knowledge-sources.md` |
