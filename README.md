@@ -90,13 +90,15 @@ PLAN → [you approve] → EXECUTE → INTERPRET → [you approve] → next cycl
 | Purpose | Claude Code | Codex CLI |
 |---------|-------------|-----------|
 | Main loop — reads RSD state, runs the current phase | `/research` | `$research` |
+| Anchor protocol to an in-progress project (existing LaTeX + git + logs) | `/research:adopt` | `$research-adopt` |
 | Interactive experiment design wizard | `/research:plan` | `$research-plan` |
 | Run experiments (fast-loop or manual) | `/research:execute` | `$research-execute` |
 | Read local papers or search arxiv/web | `/research:context` | `$research-context` |
 | Search + build structured literature survey | `/research:context search <topic>` | `$research-context search <topic>` |
+| Write / edit / compile a venue-formatted LaTeX paper from RSD | `/research:paper` | `$research-paper` |
 
 Codex alias note:
-- If installed with the current bootstrap, Codex also exposes `$research:plan`, `$research:execute`, and `$research:context` as alias skill names.
+- If installed with the current bootstrap, Codex also exposes `$research:adopt`, `$research:plan`, `$research:execute`, `$research:context`, and `$research:paper` as alias skill names.
 - `/research:*` stays Claude-specific. Codex does not get native slash commands from repo files.
 - After install, restart the Codex session so it reloads local `AGENTS.md` and `.agents/skills/`.
 - Human checkpoints accept normal-language approval or revision in chat or RSD. Exact marker formatting is optional.

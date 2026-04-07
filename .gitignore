@@ -11,6 +11,14 @@
 # NOTE: We DO track RSD.tex and RSD.pdf so they're available for review.
 # Only auxiliary build files are ignored.
 
+# Paper build artifacts (regenerated from outputs/paper/paper.tex by compile_paper.sh)
+# NOTE: We DO track outputs/paper/paper.tex and outputs/paper/references.bib.
+# Only build outputs and bibtex intermediates are ignored.
+outputs/paper/*.bbl
+outputs/paper/*.blg
+outputs/paper/*.compile.log
+outputs/paper/paper.pdf
+
 # Python
 __pycache__/
 *.pyc

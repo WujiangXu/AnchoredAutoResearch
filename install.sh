@@ -140,8 +140,14 @@ install_project_files() {
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+
+# AnchoredAutoResearch — paper build artifacts (paper.tex + references.bib stay tracked)
+outputs/paper/*.bbl
+outputs/paper/*.blg
+outputs/paper/*.compile.log
+outputs/paper/paper.pdf
 GITIGNORE
-            echo "  ✓ Added LaTeX ignores to .gitignore"
+            echo "  ✓ Added LaTeX + paper-build ignores to .gitignore"
         fi
     fi
 }
