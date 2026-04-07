@@ -30,6 +30,7 @@ For ALL commands (`$research`, `$research-plan`, `$research-execute`, `$research
 | `$research-plan` | Interactive experiment design wizard (Goal→Scope→Metric→Verify→Guard) | `references/phase-protocol.md` (PLAN section) |
 | `$research-execute` | Fast execution loop (modify→commit→verify→guard→decide→log) or manual execution | `references/autonomous-loop.md` |
 | `$research-context` | Manage knowledge sources — add, read, index papers/notes/prior work | `references/knowledge-sources.md` |
+| `$research-paper` | Write / edit / compile a venue-specific LaTeX paper. Side-effect only — never touches RSD.md | `references/paper-protocol.md` |
 
 Codex alias note:
 - If the repo installed the alias skills, `$research:adopt`, `$research:plan`, `$research:execute`, and `$research:context` are accepted aliases for the subcommands above.

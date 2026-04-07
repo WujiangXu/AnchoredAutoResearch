@@ -13,6 +13,7 @@ NEVER run experiments outside the protocol.
 | `/research:plan` | Interactive experiment design wizard (Goal→Scope→Metric→Verify→Prediction) |
 | `/research:execute` | Run experiments: fast-loop (bounded) or manual, with Codex review |
 | `/research:context` | Read, index, and cite knowledge sources from context/ directory |
+| `/research:paper` | Write / edit / compile a venue-formatted LaTeX paper from RSD (side-effect only — never touches RSD) |
 
 Permission note:
 - `/research` routes the workflow only. It does not change Claude's tool-permission state.
@@ -21,7 +22,7 @@ Permission note:
 
 ## Rules
 - RSD.md is the single source of truth — all claims must be written there
-- RSD.md is the ONLY file the AI writes research state to. RSD.tex and RSD.pdf are auto-generated — NEVER write LaTeX directly.
+- RSD.md is the ONLY file the AI writes research state to. RSD.tex and RSD.pdf are auto-generated — NEVER write RSD LaTeX directly. The ONLY place AI may write LaTeX is `outputs/paper/**` (excluding any `.cls` file), and ONLY when invoked by `/research:paper`. See `core-principles.md` §8.
 - Every phase ends with a git commit
 - Never modify past RSD entries — append only within each cycle
 - Predictions MUST be written before experiments run

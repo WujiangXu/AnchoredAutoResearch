@@ -96,6 +96,34 @@ State what the system cannot do. If blocked:
 - STOP and wait for human guidance
 - NEVER improvise past a block
 
+## 8. Dual-Format Write Discipline
+
+**AI writes RSD markdown only; NEVER writes RSD LaTeX.** The
+`RSD.md → RSD.tex → RSD.pdf` pipeline (via `scripts/md2latex.py` +
+`scripts/compile_rsd.sh`) is the only way `RSD.tex` is generated. The
+agent may never produce `RSD.tex`, `checkpoints/*.tex`, or any file that
+would make RSD-side LaTeX author-editable by the AI.
+
+### Scoped exception for paper generation
+
+The AI IS allowed to write LaTeX directly inside `outputs/paper/`, and
+ONLY when invoked by `/research:paper` (Codex: `$research-paper` or
+`$research:paper`). This exception is:
+
+- **Scoped to path prefix** `outputs/paper/**`. Resolved absolute path;
+  no `..` traversal through anything else.
+- **Forbidden for any `.cls` file** regardless of path. Conference class
+  files are user-fetched and never AI-edited.
+- **Forbidden outside an explicit `/research:paper` invocation.** No
+  other skill, phase, or background task may write LaTeX.
+- **Orthogonal to the state machine.** Paper operations do NOT advance
+  `## Phase:`, do NOT change `## Status:`, and do NOT mutate `RSD.md`.
+  If paper content conflicts with RSD, RSD wins.
+
+Enforcement: `paper-protocol.md` mandates a pre-flight path-prefix +
+`.cls` guard before every write, and `scripts/compile_paper.sh` refuses
+to operate on any path outside `outputs/paper/`.
+
 ## Anti-Gaming Rules (MANDATORY)
 
 1. NEVER write results before running experiments
