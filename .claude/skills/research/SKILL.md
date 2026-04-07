@@ -38,7 +38,17 @@ The main `/research` command reads RSD.md and dispatches based on status:
 ```
 /research invoked
   │
-  ├─ No RSD.md → INIT (ask goal, read context/, create RSD)
+  ├─ No RSD.md
+  │     ├─ User input contains existing-project signals
+  │     │  (".tex", "draft", "have code", "logs", path-like strings)
+  │     │    → offer ADOPT: "You seem to have an in-progress project.
+  │     │                    ADOPT it instead of starting fresh?
+  │     │                    (strict / fully-auto / no)"
+  │     │       ├─ User accepts → ADOPT (references/adopt-protocol.md)
+  │     │       └─ User declines → INIT
+  │     └─ Otherwise → INIT (ask goal, read context/, create RSD)
+  │
+  ├─ Phase: ADOPT → load references/adopt-protocol.md
   │
   ├─ Status: WAITING_HUMAN
   │     ├─ No explicit human approval/revision in chat or RSD → remind human, STOP
@@ -50,6 +60,10 @@ The main `/research` command reads RSD.md and dispatches based on status:
   │
   └─ Status: BLOCKED → show reason, STOP
 ```
+
+The ADOPT offer is a soft heuristic. The main state machine never runs
+ADOPT without explicit user consent. See `references/adopt-protocol.md` for
+detection signals, pre-flight checks, and the strict/fully-auto write-outs.
 
 ## Common Rules (Apply to ALL Subcommands)
 
