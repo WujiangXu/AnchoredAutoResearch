@@ -49,6 +49,34 @@ Alternatively, provide structured input:
 > Scope: 50 API budget, 1 week
 ```
 
+#### Already have a project? Anchor it instead
+
+If you already have a codebase, experiment results, or a draft paper, use `/research:adopt` (Codex: `$research-adopt`) to anchor the protocol to your existing work instead of starting from a blank `RSD.md`. You don't need all three — **any one** of the following is enough to adopt:
+
+- a `.tex` paper draft
+- git history with experiment-style commits
+- a `logs/` directory with run artifacts
+- knowledge sources in `context/`
+
+Pass your research idea inline so it seeds the imported `RSD.md`:
+
+```
+/research:adopt
+> Idea: Benchmarking memory-augmented agents on SWE-bench. Hypothesis:
+>       persistent scratchpad memory raises fix rate >10% over ReAct.
+> Codebase: agents/ has my baseline ReAct loop on top of LangChain
+> Experiments so far: logs/ has 5 ablation runs from last week, metric is pass@1
+```
+
+ADOPT collapses **everything that already exists** into a read-only **Cycle 1** snapshot. Your first real cycle with predictions starts at **Cycle 2**, which is the first time the prediction-before-execution rule kicks in. Two modes:
+
+| Mode | When |
+|------|------|
+| `strict` (default) | Cycle 1 is the snapshot only — no synthetic PLAN/EXECUTE/INTERPRET. Maximum auditability. |
+| `--mode fully-auto` | Same snapshot, plus a synthetic PLAN/EXECUTE/INTERPRET triple where every prediction-adjacent field is the literal `N/A (imported)` so audits can detect imported cycles. |
+
+After ADOPT finishes you read `RSD.pdf`, fix anything the auto-import got wrong directly in `RSD.md`, approve in chat or in the file, then run `/research` to enter Cycle 2 PLAN.
+
 ### 3. Plan an Experiment
 
 ```
@@ -90,7 +118,7 @@ PLAN → [you approve] → EXECUTE → INTERPRET → [you approve] → next cycl
 | Purpose | Claude Code | Codex CLI |
 |---------|-------------|-----------|
 | Main loop — reads RSD state, runs the current phase | `/research` | `$research` |
-| Anchor protocol to an in-progress project (existing LaTeX + git + logs) | `/research:adopt` | `$research-adopt` |
+| Anchor protocol to an in-progress project (any of: LaTeX draft, git history, logs/, or knowledge sources) | `/research:adopt` | `$research-adopt` |
 | Interactive experiment design wizard (optional `--effort low\|middle\|high`) | `/research:plan` | `$research-plan` |
 | Run experiments (fast-loop or manual) | `/research:execute` | `$research-execute` |
 | Read local papers or search arxiv/web | `/research:context` | `$research-context` |
