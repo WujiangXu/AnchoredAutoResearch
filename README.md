@@ -91,11 +91,23 @@ PLAN → [you approve] → EXECUTE → INTERPRET → [you approve] → next cycl
 |---------|-------------|-----------|
 | Main loop — reads RSD state, runs the current phase | `/research` | `$research` |
 | Anchor protocol to an in-progress project (existing LaTeX + git + logs) | `/research:adopt` | `$research-adopt` |
-| Interactive experiment design wizard | `/research:plan` | `$research-plan` |
+| Interactive experiment design wizard (optional `--effort low\|middle\|high`) | `/research:plan` | `$research-plan` |
 | Run experiments (fast-loop or manual) | `/research:execute` | `$research-execute` |
 | Read local papers or search arxiv/web | `/research:context` | `$research-context` |
 | Search + build structured literature survey | `/research:context search <topic>` | `$research-context search <topic>` |
 | Write / edit / compile a venue-formatted LaTeX paper from RSD | `/research:paper` | `$research-paper` |
+
+### Effort levels for `/research:plan`
+
+`/research:plan` supports an optional `--effort` flag that controls how widely the AI explores before proposing an experiment. Default is `low` (current behavior).
+
+| Level | Behavior |
+|-------|----------|
+| `low` (default) | One proposal tied to your stated goal. Backward-compatible. |
+| `middle` | Generates 2-3 adjacent candidates, silently picks the best, logs the rejected ones under `Alternatives considered:` in the PLAN block. |
+| `high` | Cost gate first, then generates 5-8 wild candidates spanning multiple sub-topics — including at least one cross-field / unconventional candidate (e.g. Genetic Algorithms for prompt optimization) when plausible. Presents all candidates for you to pick. Every candidate cites a knowledge source. |
+
+Use `low` for incremental work where you already know what you want. Use `high` early in a project when you have a broad topic and want surprising directions.
 
 Codex alias note:
 - If installed with the current bootstrap, Codex also exposes `$research:adopt`, `$research:plan`, `$research:execute`, `$research:context`, and `$research:paper` as alias skill names.
