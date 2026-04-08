@@ -106,6 +106,158 @@ Before proposing any experiment, MUST:
 2. Read any unread sources in `context/`
 3. Update Knowledge Sources table in RSD.md with key takeaways
 
+### Effort levels
+
+`/research:plan` accepts an `--effort low|middle|high` flag that controls
+how widely the ideation step explores before settling on a proposal. The
+default is `low` (backward-compatible — identical to the behavior before
+the effort flag was added).
+
+Effort level is **orthogonal** to Mode A (human proposes, AI refines) vs
+Mode B (AI proposes). A human-proposed core idea with `--effort high`
+means "take my idea and explore wild variations of it". A blank plan
+with `--effort low` is the classic AI-proposes-narrow behavior.
+
+**Regardless of effort level, the final written PLAN block is ONE
+experiment with ONE prediction and ONE metric. Effort affects the
+ideation step, not the output shape.** The rejected alternatives are
+recorded in the `**Alternatives considered:**` field for auditability.
+
+#### LOW (default)
+
+Current behavior verbatim. AI reads RSD + `context/`, proposes ONE
+experiment tied to the user's stated goal, fills the PLAN block. No
+candidate generation, no alternatives. The `**Alternatives considered:**`
+field is written as `N/A (low effort)`.
+
+Use LOW for incremental research, well-defined problems, time-pressed
+iteration.
+
+#### MIDDLE
+
+Silent-pick mode: AI explores 2-3 adjacent framings, picks the best, logs
+the rest.
+
+1. **Sub-topic detection**: Parse the user's goal into 1-3 sub-topics using
+   the Methods Landscape in `context/SURVEY.md` if present, otherwise from
+   the user's own description.
+2. **SURVEY.md pre-check**: If `context/SURVEY.md` is missing OR has no
+   entries matching the detected sub-topic, **offer once** to run
+   `/research:context search <topic>` first:
+   > "No SURVEY.md entries found for `<topic>`. Run `/research:context
+   > search <topic>` first to build a literature survey? (yes / no / skip)"
+   - `yes` → run the search, then continue
+   - `no` or `skip` → continue with whatever is in `context/` and record a
+     `knowledge gap` note in the final PLAN block
+3. **Generate 2-3 candidates** within the detected sub-topics. Each
+   candidate is a short record: `{direction, 1-line hypothesis, grounded-in
+   citation, estimated cost, 1-line risk}`.
+4. **Rank** by `relevance_to_user_goal × novelty × feasibility` (each
+   scored 1-5). Pick the highest.
+5. **Write** the chosen candidate as the PLAN block. Write the 1-2
+   rejected candidates as bullets in `**Alternatives considered:**` with
+   a one-line reason for rejection each.
+
+MIDDLE does NOT round-trip to the user between start and the final PLAN —
+the standard approval step at the end is the user's only opportunity to
+revise.
+
+Use MIDDLE when you know the area and want a couple of options to be
+considered without burning the tokens of HIGH.
+
+#### HIGH
+
+Wide exploration mode with explicit cross-field ideation and a user
+selection step. This is the token-heavy mode — gate it behind a cost
+prompt at the start.
+
+1. **Cost gate** (MANDATORY first step): Before any candidate generation,
+   tell the user:
+   > "High-effort exploration will generate 5-8 candidate directions
+   > spanning multiple sub-topics, and may invoke web search. This can
+   > use significantly more tokens than low/middle. Proceed? (yes / cancel)"
+   - `cancel` → STOP, tell the user to rerun with `--effort low` or
+     `--effort middle` if they want to continue
+   - `yes` → continue to step 2
+
+2. **SURVEY.md pre-check** (same as MIDDLE step 2, but mandatory to ask):
+   If `context/SURVEY.md` is missing or has no entries for the detected
+   sub-topic, offer once to run `/research:context search <topic>` first.
+   Record the answer. If the user says no/skip, proceed with whatever is
+   in `context/` and mark affected candidates with the explicit "novel —
+   no prior work found" marker.
+
+3. **Wild candidate generation**: Enumerate 5-8 candidate directions
+   spanning multiple sub-topics. The protocol REQUIRES that the set:
+   - Covers at least 3 distinct sub-topics within the user's research
+     area (e.g., for "LLM agents": prompting, memory, context engineering,
+     tool use, RL training, benchmarks, planning, self-reflection,
+     multi-agent coordination)
+   - Includes at least ONE combination candidate (two sub-topics combined,
+     e.g., "memory-aware tool use" or "RL-trained context compression")
+   - Includes at least ONE cross-field / unconventional candidate IF
+     plausible (e.g., applying Genetic Algorithms to prompt optimization,
+     control-theoretic stability bounds for agent loops, economic
+     mechanism design for multi-agent coordination, biology-inspired
+     memory consolidation). If no cross-field analogy is plausible, skip
+     this requirement rather than force a bad one.
+
+   For each candidate, produce this record:
+   ```
+   - Direction: [one line]
+   - Hypothesis: [one line — what you expect to find]
+   - Mechanism sketch: [2-3 lines — how the experiment would work]
+   - Grounded in: [source citation, or "novel — no prior work found, see
+     SURVEY.md gaps"]
+   - Novelty: [1-5]
+   - Feasibility: [1-5]
+   - Relevance: [1-5]
+   - Risk: [one line — what could go wrong]
+   ```
+
+   **Cross-field auditability**: If a candidate applies a method from
+   outside the user's field (e.g., GA for LLM agents), the Mechanism
+   sketch MUST include a one-sentence analogy explaining why the
+   cross-field mechanism plausibly applies. No analogy → drop the
+   candidate.
+
+4. **Rank** by the simple sum `novelty + feasibility + relevance` (range
+   3-15). Ties broken by feasibility (higher wins).
+
+5. **Present to user** via `AskUserQuestion` with the top 5-8 candidates
+   as options. Each option: label is the Direction (short), description
+   is `Hypothesis + "(N=novelty/F=feasibility/R=relevance)"`. Include an
+   explicit extra option labeled "You pick (highest combined score)" so
+   the user can delegate back to the AI.
+
+6. **Write the chosen candidate** as the full PLAN block with
+   `**Effort level:** high`. The rejected candidates go into
+   `**Alternatives considered:**` as bullets — one line each with their
+   combined score and the reason they weren't picked. If the user chose
+   "You pick", the AI picks the highest-score candidate and the
+   `**Alternatives considered:**` bullets include the full ranked list
+   with combined scores.
+
+Use HIGH for early-stage exploration, broad topics ("I want to study LLM
+agents"), or when the user explicitly wants to be surprised.
+
+#### Effort-level guardrails (all levels)
+
+- **Citation is non-negotiable**: every candidate at every effort level
+  MUST cite a `Grounded in:` source — either a SURVEY.md row, a specific
+  paper, or the explicit string "novel — no prior work found, see
+  SURVEY.md gaps". Silent grounding is a protocol violation.
+- **One metric, one prediction**: effort affects ideation breadth, never
+  output shape. The final PLAN block has exactly one metric, one
+  prediction, one experiment — even in HIGH. This preserves the
+  anti-gaming discipline from core-principles.md §2.
+- **No unbounded branching**: MIDDLE caps at 3 candidates, HIGH caps at 8.
+  If the AI generates more during ideation, it must rank and truncate
+  before presenting.
+- **Cost gate is single-shot**: the HIGH cost prompt fires once at the
+  start, not per-candidate. Once the user says yes, run the whole
+  protocol straight through to the selection step without interruption.
+
 ### Write the Plan (two modes)
 
 1. Read RSD.md fully. Review all prior cycles, hypotheses, open questions.
@@ -132,8 +284,13 @@ If no human proposal exists and human says "propose" or leaves PLAN blank:
 ```markdown
 ### PLAN
 **Proposed by:** [human | AI | human-refined-by-AI]
+**Effort level:** [low | middle | high]
 **Proposed:** [what experiment to run and why — link to hypothesis]
 **Grounded in:** [which knowledge source informed this — cite file or URL]
+**Alternatives considered:**
+- [rejected candidate 1 — one line + why rejected]
+- [rejected candidate 2 — one line + why rejected]
+- (or "N/A (low effort)" for low-effort plans)
 **Prediction:** [specific expected outcome — numbers, directions, ranges]
 **If wrong:** [what a failed prediction would imply for the hypothesis]
 **Files to modify:** [list of files that will be created or changed]
@@ -142,6 +299,11 @@ If no human proposal exists and human says "propose" or leaves PLAN blank:
 **Verify command:** [command that extracts metric, if fast-loop mode]
 **Guard command:** [regression check command, if fast-loop mode]
 ```
+
+The `**Effort level:**` and `**Alternatives considered:**` fields are
+required in new PLAN blocks going forward. Cycle-1 blocks written before
+the feature landed remain valid — downstream tools must tolerate both
+the old (9-field) and new (11-field) shapes.
 
 3. Update `## Status: WAITING_HUMAN` and `## Phase: PLAN`
 4. Run `bash scripts/compile_rsd.sh`
