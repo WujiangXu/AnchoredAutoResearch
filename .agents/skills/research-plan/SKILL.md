@@ -1,6 +1,6 @@
 ---
 name: research-plan
-description: "AnchoredAutoResearch planning wizard for Codex. Builds the PLAN section with scope, metrics, verify/guard commands, predictions, and human approval gates. Supports --effort low|middle|high."
+description: "AnchoredAutoResearch planning wizard for Codex. Builds the PLAN section with scope, metrics, verify/guard commands, predictions, and human approval gates. Supports --effort low|middle|high and --search N for literature-pool size."
 version: 1.0.0
 ---
 
@@ -8,10 +8,19 @@ version: 1.0.0
 
 Use this skill when the user invokes `$research-plan` in Codex.
 
-Optional flag: `--effort low|middle|high` controls ideation breadth.
-Default is `low` (current behavior). See `### Effort levels` in
-`../research/references/phase-protocol.md` for the per-level protocol.
-Reject any other value with: "unknown effort level — use low, middle, or high".
+Optional flags:
+- `--effort low|middle|high` controls ideation breadth. Default is `low`
+  (current behavior). See `### Effort levels` in
+  `../research/references/phase-protocol.md` for the per-level protocol.
+  Reject any other value with: "unknown effort level — use low, middle,
+  or high".
+- `--search N` sets the literature discover-pool size when this
+  invocation triggers `/research:context search <topic>`. Integer in
+  `[10, 500]`; clamped. Default by effort: `low` ignores it, `middle`
+  honors if passed, `high` defaults to `N=200`. Deep-read count is
+  `min(30, N // 5)`. See `knowledge-sources.md` "Search mode" for the
+  two-tier protocol. Reject non-integer values with: "`--search` must
+  be a positive integer in 10..500".
 
 ## MANDATORY: Read Protocol Before Any Action
 
@@ -24,7 +33,10 @@ Reject any other value with: "unknown effort level — use low, middle, or high"
 ## Execution
 
 1. Treat any remaining user text as inline goal or planning context.
-   Parse `--effort low|middle|high` if present (default `low`).
+   Parse `--effort low|middle|high` (default `low`) and `--search N`
+   (integer in `[10, 500]`, clamped). Resolve the effective `--search`
+   value per effort level: LOW ignores, MIDDLE honors if passed, HIGH
+   defaults to `N=200`.
 2. Verify the project is in PLAN or can safely enter PLAN from INIT
 3. Read unread sources in `context/`
 4. Branch on effort level per `### Effort levels` in

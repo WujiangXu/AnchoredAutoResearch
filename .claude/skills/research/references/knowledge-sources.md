@@ -108,6 +108,13 @@ Based on the gaps and limitations above:
 - **Limitations:** [what it doesn't address or does poorly]
 - **Relevance to us:** [why this matters for our research goal]
 - **Source:** [URL or file path]
+
+## Screened (abstract-only)
+*Papers discovered during the search but not deep-read. Relevance-ranked; deep-read papers live in Per-Paper Notes above. Populated when `/research:context search` is invoked with `--search N > 10`.*
+
+| Paper | Venue / Year | 1-line relevance to topic |
+|-------|--------------|---------------------------|
+| [title](url) | [venue, year] | [why this was surfaced by the search] |
 ```
 
 ### When to Update SURVEY.md
@@ -184,17 +191,55 @@ When invoked standalone:
 6. If `RSD.md` exists, update the `## Knowledge Sources` table
 7. Report to human: what was read, key findings, updated gaps/directions
 
-### Search mode (`/research:context search <topic>`): Web search + analysis
-1. Search arxiv, Google Scholar, web for the given topic
-2. Download or save URLs for top 5-10 relevant results
-3. Read abstracts/summaries — for each paper extract: methodology, key result, strengths, limitations
-4. Update `context/SOURCES.md` index with found sources
-5. Create or update `context/SURVEY.md` with structured analysis:
-   - Methods Landscape table (method | core idea | strengths | limitations | best result)
-   - Key findings, what works, what doesn't work
-   - Open problems / research gaps
-   - State of the art table
-   - Suggested research directions grounded in the gaps
-   - Per-paper notes (methodology, result, strengths, limitations, relevance)
-6. If `RSD.md` exists, update the `## Knowledge Sources` table
-7. Report to human: survey summary, top findings, suggested directions
+### Search mode (`/research:context search <topic> [--search N]`): Web search + analysis
+
+The `--search N` flag sets the size of the **discover pool** — how many unique
+title + abstract hits the search collects before ranking.
+Default: `10`. Range: `10`-`500` (values outside the range are clamped and the
+actual used value is reported to the user).
+
+**Two-tier operation** (the reason `--search N` is decoupled from deep-read count):
+
+- **Discover** (cheap) — collect up to `N` unique title + abstract hits via web
+  search across arxiv, Google Scholar, and the general web.
+- **Deep-read** (expensive) — read the top `min(30, N // 5)` papers in full,
+  ranked by relevance.
+
+Rationale: title-level discovery scales cheaply (≈1 search query per 10 results),
+but full-text reading is token-heavy with diminishing returns past ~30 papers.
+The two-tier split gives you breadth coverage via the Screened section and depth
+coverage via Per-Paper Notes.
+
+**Protocol:**
+
+1. **Scale query count to `N`:**
+   - `N ≤ 20` → 3-5 queries (same as the pre-flag default)
+   - `20 < N ≤ 100` → 8-15 queries spanning keyword variants and synonyms
+   - `100 < N ≤ 500` → 15-30 queries spanning sub-topics, method families,
+     benchmarks, and adjacent literatures
+2. **Discover phase:** for each query, search arxiv / Google Scholar / web.
+   Dedupe by paper URL or title. Collect `{title, abstract, venue, year, url}`
+   for up to `N` unique hits. Stop early if fewer unique hits exist than `N`
+   (the topic is simply smaller than the requested pool).
+3. **Rank** the discovered pool by relevance to the topic, using title + abstract.
+4. **Deep-read phase:** select the top `min(30, N // 5)` papers. For each, read
+   the full abstract (and the conclusion if available) and extract methodology,
+   key result, strengths, limitations.
+5. Update `context/SOURCES.md` index with **all** discovered sources (both
+   deep-read and screened).
+6. Update `context/SURVEY.md` with structured analysis:
+   - **Methods Landscape** table — from the deep-read subset only
+   - **Key findings, what works, what doesn't work** — from deep-read subset
+   - **Open problems / research gaps** — from deep-read subset
+   - **State of the art** table — from deep-read subset
+   - **Suggested research directions** — grounded in the gaps
+   - **Per-Paper Notes** — one full entry per deep-read paper
+   - **Screened (abstract-only)** — one row per discovered-but-not-deep-read
+     paper with title, venue/year, and 1-line relevance (skip this section
+     entirely when `N ≤ 10`)
+7. If `RSD.md` exists, update the `## Knowledge Sources` table. Deep-read papers
+   get full "Key Takeaway" entries. Screened papers can be summarized as a
+   single row: `screened <M> additional papers via /research:context search`.
+8. **Report to human:** survey summary, top findings, how many were deep-read
+   vs screened, and suggested directions. Always print the effective `--search`
+   value used (including clamps), so the user knows what actually happened.
