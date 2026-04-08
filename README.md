@@ -119,7 +119,7 @@ PLAN → [you approve] → EXECUTE → INTERPRET → [you approve] → next cycl
 |---------|-------------|-----------|
 | Main loop — reads RSD state, runs the current phase | `/research` | `$research` |
 | Anchor protocol to an in-progress project (any of: LaTeX draft, git history, logs/, or knowledge sources) | `/research:adopt` | `$research-adopt` |
-| Interactive experiment design wizard (optional `--effort low\|middle\|high`) | `/research:plan` | `$research-plan` |
+| Interactive experiment design wizard (optional `--effort low\|middle\|high`, `--search N`) | `/research:plan` | `$research-plan` |
 | Run experiments (fast-loop or manual) | `/research:execute` | `$research-execute` |
 | Read local papers or search arxiv/web | `/research:context` | `$research-context` |
 | Search + build structured literature survey | `/research:context search <topic>` | `$research-context search <topic>` |
@@ -127,15 +127,28 @@ PLAN → [you approve] → EXECUTE → INTERPRET → [you approve] → next cycl
 
 ### Effort levels for `/research:plan`
 
-`/research:plan` supports an optional `--effort` flag that controls how widely the AI explores before proposing an experiment. Default is `low` (current behavior).
+`/research:plan` supports two optional flags that control how widely the AI explores before proposing an experiment:
 
-| Level | Behavior |
-|-------|----------|
-| `low` (default) | One proposal tied to your stated goal. Backward-compatible. |
-| `middle` | Generates 2-3 adjacent candidates, silently picks the best, logs the rejected ones under `Alternatives considered:` in the PLAN block. |
-| `high` | Cost gate first, then generates 5-8 wild candidates spanning multiple sub-topics — including at least one cross-field / unconventional candidate (e.g. Genetic Algorithms for prompt optimization) when plausible. Presents all candidates for you to pick. Every candidate cites a knowledge source. |
+- **`--effort low|middle|high`** — ideation breadth. Default is `low` (current behavior).
+- **`--search N`** — literature discover-pool size. Integer in `[10, 500]`, clamped. Default depends on `--effort`.
+
+| Level | Ideation | Default `--search` | Behavior |
+|-------|----------|--------------------|----------|
+| `low` (default) | 1 proposal | — (no search) | One proposal tied to your stated goal. Backward-compatible. |
+| `middle` | 2-3 candidates, silent pick | 10 (honors `--search` if passed) | Generates adjacent candidates, silently picks the best, logs the rejected ones under `Alternatives considered:`. |
+| `high` | 5-8 wild candidates, you pick | **200** (user override wins) | Cost gate first, then generates wild candidates spanning multiple sub-topics — including at least one cross-field / unconventional candidate (e.g. Genetic Algorithms for prompt optimization) when plausible. Presents all candidates for you to pick. Every candidate cites a knowledge source. |
 
 Use `low` for incremental work where you already know what you want. Use `high` early in a project when you have a broad topic and want surprising directions.
+
+**About `--search N`:** when triggered, `/research:plan` calls `/research:context search <topic> --search N` under the hood. The search runs a **two-tier protocol**: it discovers up to `N` papers via title+abstract, then deep-reads the top `min(30, N // 5)` in full. At `N=200` you get 200 screened + 30 deep-read. Deep-read papers populate the Methods Landscape and Per-Paper Notes in `context/SURVEY.md`; screened papers go into a `## Screened (abstract-only)` table so they're still visible but don't burn the token budget. Max allowed is `--search 500`.
+
+Examples:
+```text
+/research:plan --effort high                    # HIGH with default 200-paper wide search
+/research:plan --effort high --search 300       # HIGH, scaled up to 300 screened
+/research:plan --effort high --search 50        # HIGH, scaled down (cheaper)
+/research:plan --effort middle --search 50      # MIDDLE with an unusually wide search
+```
 
 Codex alias note:
 - If installed with the current bootstrap, Codex also exposes `$research:adopt`, `$research:plan`, `$research:execute`, `$research:context`, and `$research:paper` as alias skill names.
