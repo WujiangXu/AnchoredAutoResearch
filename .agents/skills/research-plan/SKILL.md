@@ -1,12 +1,17 @@
 ---
 name: research-plan
-description: "AnchoredAutoResearch planning wizard for Codex. Builds the PLAN section with scope, metrics, verify/guard commands, predictions, and human approval gates."
+description: "AnchoredAutoResearch planning wizard for Codex. Builds the PLAN section with scope, metrics, verify/guard commands, predictions, and human approval gates. Supports --effort low|middle|high."
 version: 1.0.0
 ---
 
 # AnchoredAutoResearch — PLAN Entrypoint
 
 Use this skill when the user invokes `$research-plan` in Codex.
+
+Optional flag: `--effort low|middle|high` controls ideation breadth.
+Default is `low` (current behavior). See `### Effort levels` in
+`../research/references/phase-protocol.md` for the per-level protocol.
+Reject any other value with: "unknown effort level — use low, middle, or high".
 
 ## MANDATORY: Read Protocol Before Any Action
 
@@ -18,16 +23,25 @@ Use this skill when the user invokes `$research-plan` in Codex.
 
 ## Execution
 
-1. Treat any remaining user text as inline goal or planning context
+1. Treat any remaining user text as inline goal or planning context.
+   Parse `--effort low|middle|high` if present (default `low`).
 2. Verify the project is in PLAN or can safely enter PLAN from INIT
 3. Read unread sources in `context/`
-4. Build the PLAN entry with:
+4. Branch on effort level per `### Effort levels` in
+   `../research/references/phase-protocol.md`:
+   - `low` → one proposal tied to the user's goal (current behavior)
+   - `middle` → 2-3 candidates, silent auto-pick, log alternatives
+   - `high` → cost gate first; 5-8 candidates spanning sub-topics with at
+     least one cross-field candidate; present via interactive selection
+5. Build the PLAN entry with:
    - goal and hypothesis linkage
-   - grounded-in source citation
+   - grounded-in source citation (every candidate at every effort level)
    - prediction before execution
    - verify and guard commands
    - execution mode
-5. Set `Status: WAITING_HUMAN`
-6. Run `bash scripts/compile_rsd.sh`
-7. Commit the phase boundary
-8. Stop and tell the human to approve or revise in chat or `RSD.md` using any clear wording
+   - `Effort level:` and `Alternatives considered:` fields (use
+     `N/A (low effort)` for the default level)
+6. Set `Status: WAITING_HUMAN`
+7. Run `bash scripts/compile_rsd.sh`
+8. Commit the phase boundary
+9. Stop and tell the human to approve or revise in chat or `RSD.md` using any clear wording
