@@ -45,7 +45,7 @@ install_claude_skills() {
         rm "$target_claude/commands/research"
     fi
     ln -sf "$SCRIPT_DIR/.claude/commands/research" "$target_claude/commands/research"
-    echo "  ✓ Claude subcommands linked: /research:plan, /research:execute, /research:context"
+    echo "  ✓ Claude subcommands linked: /research:adopt, /research:plan, /research:execute, /research:context"
 }
 
 copy_codex_skill() {
@@ -68,12 +68,16 @@ install_codex_skills() {
     mkdir -p "$target_codex/skills/research"
 
     copy_codex_skill "$target_codex" "research" "research" "research"
+    copy_codex_skill "$target_codex" "research-adopt" "research-adopt" "research-adopt"
     copy_codex_skill "$target_codex" "research-plan" "research-plan" "research-plan"
     copy_codex_skill "$target_codex" "research-execute" "research-execute" "research-execute"
     copy_codex_skill "$target_codex" "research-context" "research-context" "research-context"
+    copy_codex_skill "$target_codex" "research-paper" "research-paper" "research-paper"
+    copy_codex_skill "$target_codex" "research-colon-adopt" "research-colon-adopt" "research:adopt"
     copy_codex_skill "$target_codex" "research-colon-plan" "research-colon-plan" "research:plan"
     copy_codex_skill "$target_codex" "research-colon-execute" "research-colon-execute" "research:execute"
     copy_codex_skill "$target_codex" "research-colon-context" "research-colon-context" "research:context"
+    copy_codex_skill "$target_codex" "research-colon-paper" "research-colon-paper" "research:paper"
 
     rm -rf "$target_codex/skills/research/references"
     cp -R "$SCRIPT_DIR/.claude/skills/research/references" "$target_codex/skills/research/references"
@@ -104,9 +108,13 @@ install_project_files() {
     mkdir -p "$target_project/scripts" "$target_project/templates"
     cp "$SCRIPT_DIR/scripts/compile_rsd.sh" "$target_project/scripts/"
     cp "$SCRIPT_DIR/scripts/md2latex.py" "$target_project/scripts/"
-    chmod +x "$target_project/scripts/compile_rsd.sh" "$target_project/scripts/md2latex.py"
+    cp "$SCRIPT_DIR/scripts/compile_paper.sh" "$target_project/scripts/"
+    chmod +x "$target_project/scripts/compile_rsd.sh" "$target_project/scripts/md2latex.py" "$target_project/scripts/compile_paper.sh"
     cp "$SCRIPT_DIR/templates/rsd.tex" "$target_project/templates/"
-    echo "  ✓ Copied scripts/ and templates/"
+    # Paper venue templates (skeleton wrappers only — .cls files are user-fetched)
+    mkdir -p "$target_project/templates/paper"
+    cp -R "$SCRIPT_DIR/templates/paper/." "$target_project/templates/paper/"
+    echo "  ✓ Copied scripts/ and templates/ (including paper venue templates)"
 
     # Context directory
     mkdir -p "$target_project/context/papers" "$target_project/context/notes" "$target_project/context/prior_work"
@@ -132,8 +140,14 @@ install_project_files() {
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+
+# AnchoredAutoResearch — paper build artifacts (paper.tex + references.bib stay tracked)
+outputs/paper/*.bbl
+outputs/paper/*.blg
+outputs/paper/*.compile.log
+outputs/paper/paper.pdf
 GITIGNORE
-            echo "  ✓ Added LaTeX ignores to .gitignore"
+            echo "  ✓ Added LaTeX + paper-build ignores to .gitignore"
         fi
     fi
 }
@@ -156,8 +170,8 @@ if [ "$1" = "--global" ]; then
     echo ""
     echo "Done! Available in ALL projects:"
     echo "  Claude Code: /research"
-    echo "  Codex CLI:   \$research, \$research-plan, \$research-execute, \$research-context"
-    echo "               aliases: \$research:plan, \$research:execute, \$research:context"
+    echo "  Codex CLI:   \$research, \$research-adopt, \$research-plan, \$research-execute, \$research-context, \$research-paper"
+    echo "               aliases: \$research:adopt, \$research:plan, \$research:execute, \$research:context, \$research:paper"
     echo ""
     echo "To set up a project: create context/ and scripts/ dirs, or run:"
     echo "  $0 /path/to/project"
@@ -186,8 +200,8 @@ else
     echo ""
     echo "Done! From $TARGET, run:"
     echo "  Claude Code: /research"
-    echo "  Codex CLI:   \$research, \$research-plan, \$research-execute, \$research-context"
-    echo "               aliases: \$research:plan, \$research:execute, \$research:context"
+    echo "  Codex CLI:   \$research, \$research-adopt, \$research-plan, \$research-execute, \$research-context, \$research-paper"
+    echo "               aliases: \$research:adopt, \$research:plan, \$research:execute, \$research:context, \$research:paper"
     echo ""
     echo "Quick start:"
     echo "  1. Drop papers into context/papers/"
