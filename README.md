@@ -184,7 +184,9 @@ your-project/
 
 ## Credits
 
-Inspired by and adapted from [autoresearch](https://github.com/uditgoenka/autoresearch) by [Udit Goenka](https://github.com/uditgoenka), which pioneered the autonomous research loop with git-as-memory. AnchoredAutoResearch transfers autoresearch's best patterns (autonomous loop engine, git-based experiment memory, multi-persona analysis, modular skill architecture) and adds human checkpoints, prediction discipline, knowledge sources, dual-format RSD, and Codex code review.
+Huge thanks to [Udit Goenka](https://github.com/uditgoenka) for [**autoresearch**](https://github.com/uditgoenka/autoresearch), the upstream project this fork is built on. Udit pioneered the autonomous research loop with git-as-memory, and was gracious enough to [feature AnchoredAutoResearch in the autoresearch README](https://github.com/uditgoenka/autoresearch?tab=readme-ov-file#claude-autoresearch) — the acknowledgment goes both ways.
+
+AnchoredAutoResearch transfers autoresearch's best patterns (autonomous loop engine, git-based experiment memory, multi-persona analysis, modular skill architecture) and adds human checkpoints, prediction discipline, knowledge sources, dual-format RSD, Codex code review, mid-stage `/research:adopt`, and venue-formatted `/research:paper` generation.
 
 The original autoresearch concept traces back to [Andrej Karpathy's tweet](https://x.com/karpathy/status/1908628566789910801) on autonomous AI research.
 
