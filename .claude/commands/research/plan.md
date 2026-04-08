@@ -1,7 +1,7 @@
 ---
 name: research:plan
-description: "Interactive experiment design wizard. Builds a complete PLAN section for RSD: Goal→Scope→Metric→Verify→Guard→Prediction→Confirm. Supports --effort low|middle|high."
-argument-hint: "[goal description] [--effort low|middle|high]"
+description: "Interactive experiment design wizard. Builds a complete PLAN section for RSD: Goal→Scope→Metric→Verify→Guard→Prediction→Confirm. Supports --effort low|middle|high and --search N for literature-pool size."
+argument-hint: "[goal description] [--effort low|middle|high] [--search N]"
 ---
 
 EXECUTE IMMEDIATELY — do not deliberate before reading the protocol.
@@ -10,13 +10,27 @@ EXECUTE IMMEDIATELY — do not deliberate before reading the protocol.
 
 Extract from $ARGUMENTS:
 - Goal text — if user provides it inline, use as starting point
-- Any flags: `--scope`, `--metric`, `--verify`, `--guard`, `--mode`, `--effort`
+- Any flags: `--scope`, `--metric`, `--verify`, `--guard`, `--mode`, `--effort`, `--search`
 - `--effort low|middle|high` — exploration breadth for the ideation step.
   Default: `low` (backward-compatible, same as before the flag was added).
   See `phase-protocol.md` `### Effort levels` for the per-level protocol.
   Validate: if `--effort` is present, value MUST be one of `low`, `middle`,
   `high`. Reject any other value with: "unknown effort level — use low,
   middle, or high".
+- `--search N` — size of the literature discover-pool when this invocation
+  triggers `/research:context search <topic>`. `N` is an integer in
+  `[10, 500]`; values outside the range are clamped and the effective
+  value is reported back to the user. Default behavior by effort level:
+  - `--effort low` → `--search` is silently ignored (LOW never runs a
+    search)
+  - `--effort middle` → honored if passed; otherwise the pre-flag
+    "small pool" default applies (`N ≤ 10`)
+  - `--effort high` → default `N = 200`; user override wins
+  Deep-read count always follows `min(30, N // 5)` per
+  `knowledge-sources.md` (the `--search` flag never changes the
+  deep-read ceiling). Validate: if `--search` is present, its value
+  MUST parse as a positive integer. Reject anything else with:
+  "`--search` must be a positive integer in 10..500".
 
 ## Execution
 
@@ -39,23 +53,33 @@ If no goal inline, ask:
 - Read codebase structure and existing code
 - Read knowledge sources — what does prior work suggest?
 - Identify relevant tools, frameworks, metrics
+- **Resolve the effective `--search N` value** before any context-search
+  call (see the Argument Parsing block for the per-effort default table).
+  When HIGH effort triggers `/research:context search`, always forward
+  the effective `--search` value so `knowledge-sources.md`'s two-tier
+  discover/deep-read protocol kicks in.
 - **Branch on effort level** (see `phase-protocol.md` `### Effort levels`
   for the full per-level protocol):
   - `low` (default) → one proposal tied to the user's stated goal. No
-    candidate generation. Continue to Step 3.
-  - `middle` → optionally offer `/research:context search` if SURVEY.md
-    is thin; generate 2-3 adjacent candidates; rank by
+    candidate generation, no literature search. Continue to Step 3.
+  - `middle` → optionally offer `/research:context search <topic>
+    [--search N]` if SURVEY.md is thin (forward the user's `--search` if
+    passed); generate 2-3 adjacent candidates; rank by
     relevance × novelty × feasibility; silently pick the best; remember
     the rejected candidates for Step 7's `**Alternatives considered:**`
     field.
-  - `high` → fire the cost gate FIRST (`"This will use significantly more
-    tokens. Proceed?"`); on yes, optionally offer `/research:context
-    search`; generate 5-8 candidates spanning 3+ sub-topics with at
-    least one combination candidate and at least one cross-field
-    candidate when plausible; score each on novelty/feasibility/relevance
-    (1-5 each); present the top 5-8 via `AskUserQuestion` with a "You
-    pick (highest combined score)" delegation option; use the chosen
-    candidate as the seed for Steps 3-6.
+  - `high` → fire the cost gate FIRST (cost warning must include the
+    effective discover-pool size, e.g. `"This will use significantly
+    more tokens (wide search of N=200 papers)."`); on yes, run
+    `/research:context search <topic> --search <N>` if the topic is not
+    already well-covered in SURVEY.md (default N=200; honor user's
+    `--search` override); generate 5-8 candidates spanning 3+
+    sub-topics with at least one combination candidate and at least one
+    cross-field candidate when plausible; score each on
+    novelty/feasibility/relevance (1-5 each); present the top 5-8 via
+    `AskUserQuestion` with a "You pick (highest combined score)"
+    delegation option; use the chosen candidate as the seed for
+    Steps 3-6.
 
 ### Step 3: Define Scope
 Present scope options:

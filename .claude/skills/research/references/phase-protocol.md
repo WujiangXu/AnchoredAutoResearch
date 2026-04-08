@@ -171,21 +171,40 @@ Wide exploration mode with explicit cross-field ideation and a user
 selection step. This is the token-heavy mode — gate it behind a cost
 prompt at the start.
 
+**Search-pool size (`--search N`)**: HIGH runs a wide literature search
+via `/research:context search` by default. The discover-pool size is:
+- `N = 200` when the user did not pass `--search` on `/research:plan`
+- `N = <user value>` (clamped to `10`-`500`) when `--search N` was passed
+Deep-read count follows `min(30, N // 5)` per `knowledge-sources.md`.
+MIDDLE may also inherit a user-passed `--search N` when it offers the
+search; LOW never runs a search and ignores `--search` silently.
+
 1. **Cost gate** (MANDATORY first step): Before any candidate generation,
    tell the user:
    > "High-effort exploration will generate 5-8 candidate directions
-   > spanning multiple sub-topics, and may invoke web search. This can
-   > use significantly more tokens than low/middle. Proceed? (yes / cancel)"
+   > spanning multiple sub-topics, and runs a wide literature search
+   > (discover pool = `<N>` papers via `/research:context search`, with
+   > top `<min(30, N // 5)>` deep-read). This can use significantly more
+   > tokens than low/middle. Proceed? (yes / cancel)"
+   - Substitute `<N>` with the effective value (200 default, or the
+     user's `--search N` override).
    - `cancel` → STOP, tell the user to rerun with `--effort low` or
-     `--effort middle` if they want to continue
+     `--effort middle` if they want to continue, or pass a smaller
+     `--search N` (e.g. `--search 50`) if the cost is the blocker.
    - `yes` → continue to step 2
 
-2. **SURVEY.md pre-check** (same as MIDDLE step 2, but mandatory to ask):
-   If `context/SURVEY.md` is missing or has no entries for the detected
-   sub-topic, offer once to run `/research:context search <topic>` first.
-   Record the answer. If the user says no/skip, proceed with whatever is
-   in `context/` and mark affected candidates with the explicit "novel —
-   no prior work found" marker.
+2. **SURVEY.md pre-check + wide search**: If `context/SURVEY.md` is
+   missing OR has no entries for the detected sub-topic, automatically
+   run (no prompt needed — the cost gate already confirmed):
+   ```
+   /research:context search <topic> --search <N>
+   ```
+   where `<N>` is the effective search-pool size from the Search-pool
+   note above. If SURVEY.md already covers the sub-topic and the user
+   did NOT pass `--search`, skip the search; if the user DID pass
+   `--search N`, run the search anyway to honor the explicit request.
+   If for any reason the search is skipped entirely, mark affected
+   candidates with the explicit "novel — no prior work found" marker.
 
 3. **Wild candidate generation**: Enumerate 5-8 candidate directions
    spanning multiple sub-topics. The protocol REQUIRES that the set:
